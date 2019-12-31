@@ -1,0 +1,8 @@
+# Files
+.*
+
+# Directories
+**/__pycache__
+**/logs
+**/data
+**/output
