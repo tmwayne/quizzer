@@ -20,7 +20,6 @@ fileConfig('configs/logging.ini')
 logger = logging.getLogger()
 
 
-
 ######################################################################
 ### FUNCTIONS
 ######################################################################
@@ -30,18 +29,15 @@ logger = logging.getLogger()
 ### CONFIGURATIONS
 ######################################################################
 
-# try:
-    # with open('configs/configs.json', 'r') as f:
-        # configs = json.load(f)
-# except Exception as e:
-    # logger.exception('Unable to load configuration file')
+try:
+    with open('configs/configs.json', 'r') as f:
+        configs = json.load(f)
+except Exception as e:
+    logger.exception('Unable to load configuration file')
 
 ######################################################################
 ### MAIN
 ######################################################################
 
 if __name__ == '__main__':
-
-   logger.info('This should print to the file')
-   logger.warning('This should print to the console')
 
