@@ -14,6 +14,7 @@ last modified: 2020-01-01
 
 import csv
 import random
+import statistics
 
 ######################################################################
 ### FUNCTIONS
@@ -42,9 +43,19 @@ class QuizDataLoader():
             self.body = data[1:]
 
 class QuizGenerator():
+    ## Public attributes
     question = None
     answer = None
     response = None
+    scores = None
+
+    ## Private attributes
+    _quiz_header = None
+    _quiz_body = None
+    _question_field = None
+    _answer_field = None
+    _question_list = None
+    _question_num = None
 
     def __init__(self, data):
         assert(type(data) == QuizDataLoader)
@@ -57,6 +68,7 @@ class QuizGenerator():
 
         quiz_len = len(self._quiz_body)
         self._question_list = list(range(quiz_len))
+        self.scores = [0] * quiz_len
 
         if random:
             random.shuffle(self._question_list)
@@ -65,9 +77,10 @@ class QuizGenerator():
 
     def ask_question(self):
         if self._question_list:
-            question = self._question_list.pop()
-            self.question = self._quiz_body[question][self._question_field]
-            self.answer = self._quiz_body[question][self._answer_field]
+            self._question_num = self._question_list.pop()
+            self.question = self._quiz_body[self._question_num]\
+                [self._question_field]
+            self.answer = self._quiz_body[self._question_num][self._answer_field]
         else:
             self.question = None
             self.answer = None
@@ -77,6 +90,18 @@ class QuizGenerator():
 
     def check_response(self):
         return self.answer == self.response
+
+    def update_scores(self):
+        is_correct = self.check_response()
+        self.scores[self._question_num] = 1 if is_correct else -1
+        
+    def score_quiz(self):
+        was_asked = lambda x: x != 0
+        output = statistics.mean(filter(was_asked, self.scores))
+        return (output + 1) / 2
+
+    def return_misses(self):
+        return [x[1] for x in zip(self.scores, self._quiz_body) if x[0] == -1]
 
 
 ## EXCEPTIONS
@@ -90,13 +115,4 @@ class MissingQuizData(Exception):
 
 class MissingQuizBody(Exception):
     pass
-
-
-######################################################################
-### CONFIGURATIONS
-######################################################################
-
-configs = {
-}
-
 

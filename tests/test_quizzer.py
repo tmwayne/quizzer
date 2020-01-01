@@ -26,7 +26,7 @@ from app.quizzer import (
 ### FUNCTIONS
 ######################################################################
 
-class TestCase(unittest.TestCase):
+class Test_QuizDataLoader(unittest.TestCase):
 
     ## SETUP
     ##############################
@@ -49,11 +49,12 @@ class TestCase(unittest.TestCase):
         for file_name in self.quizzes.keys():
             os.remove(file_name)
 
-    ## QuizDataLoader
+    ## TESTS
     ##############################
     def test_load_valid_quiz(self):
         quiz_data = QuizDataLoader()
         quiz_data.from_csv('quiz_valid.csv')
+
         self.assertEqual(quiz_data.header, ['question', 'answer'])
         self.assertEqual(len(quiz_data.body), 2)
 
@@ -78,12 +79,27 @@ class TestCase(unittest.TestCase):
         except Exception as e:
             self.assertEqual(type(e), MissingQuizData)
 
-    ## QuizGenerator
+class Test_QuizGenerator(unittest.TestCase):
+
+    ## SETUP
     ##############################
-    def test_question_generation(self):
+    def setUp(self):
+        """ Write quiz files for different cases """
+        with open('quiz_valid.csv', 'w') as f_out:
+            f_out.writelines(['question,answer\n', 'q1,a1\n', 'q2,a2\n'])
         quiz_data = QuizDataLoader()
         quiz_data.from_csv('quiz_valid.csv')
-        quiz = QuizGenerator(data=quiz_data)
+        self.quiz = QuizGenerator(data=quiz_data)
+
+    def tearDown(self):
+        """ Remove quiz files from disk """
+        os.remove('quiz_valid.csv')
+        del self.quiz
+
+    ## TESTS
+    ##############################
+    def test_question_generation(self):
+        quiz = self.quiz
         quiz.generate_quiz(field=0, random=False)
 
         quiz.ask_question()
@@ -95,11 +111,9 @@ class TestCase(unittest.TestCase):
         quiz.ask_question()
         self.assertIsNone(quiz.question)
 
-    def test_answer_checking(self):
-        quiz_data = QuizDataLoader()
-        quiz_data.from_csv('quiz_valid.csv')
-        quiz = QuizGenerator(data=quiz_data)
-        quiz.generate_quiz()
+    def test_response_checking(self):
+        quiz = self.quiz
+        quiz.generate_quiz(field=0, random=False)
 
         quiz.ask_question()
         self.assertEqual(quiz.question, 'q1')
@@ -109,6 +123,45 @@ class TestCase(unittest.TestCase):
         quiz.give_response('a2')
         self.assertFalse(quiz.check_response())
 
+    def test_response_checking_rev(self):
+        quiz = self.quiz
+        quiz.generate_quiz(field=1, random=False)
+
+        quiz.ask_question()
+        self.assertEqual(quiz.question, 'a1')
+        quiz.give_response('q1')
+        self.assertTrue(quiz.check_response())
+
+        quiz.give_response('q2')
+        self.assertFalse(quiz.check_response())
+
+    def test_question_scoring(self):
+        quiz = self.quiz
+        quiz.generate_quiz(field=0, random=False)
+
+        quiz.ask_question()
+        quiz.give_response('a1')
+        quiz.update_scores()
+        self.assertEqual(quiz.score_quiz(), 1.0)
+
+        quiz.ask_question()
+        quiz.give_response('a4') # Give incorrect response
+        quiz.update_scores()
+        self.assertEqual(quiz.score_quiz(), .5)
+
+    def test_return_misses(self):
+        quiz = self.quiz
+        quiz.generate_quiz(field=0, random=False)
+
+        quiz.ask_question()
+        quiz.give_response('a1')
+        quiz.update_scores()
+        self.assertEqual(quiz.return_misses(), [])
+
+        quiz.ask_question()
+        quiz.give_response('a4') # Give incorrect response
+        quiz.update_scores()
+        self.assertEqual(quiz.return_misses(), [['q2', 'a2']])
 
 ######################################################################
 ### MAIN
