@@ -98,7 +98,7 @@ class Test_QuizGenerator(unittest.TestCase):
     ##############################
     def test_question_generation(self):
         quiz = self.quiz
-        quiz.generate_quiz(field=0, random=False)
+        quiz.generate_quiz(field=0, shuffle=False)
 
         quiz.ask_question()
         self.assertEqual(quiz.question, 'q1')
@@ -111,7 +111,7 @@ class Test_QuizGenerator(unittest.TestCase):
 
     def test_response_checking(self):
         quiz = self.quiz
-        quiz.generate_quiz(field=0, random=False)
+        quiz.generate_quiz(field=0, shuffle=False)
 
         quiz.ask_question()
         self.assertEqual(quiz.question, 'q1')
@@ -123,7 +123,7 @@ class Test_QuizGenerator(unittest.TestCase):
 
     def test_response_checking_rev(self):
         quiz = self.quiz
-        quiz.generate_quiz(field=1, random=False)
+        quiz.generate_quiz(field=1, shuffle=False)
 
         quiz.ask_question()
         self.assertEqual(quiz.question, 'a1')
@@ -135,7 +135,7 @@ class Test_QuizGenerator(unittest.TestCase):
 
     def test_question_scoring(self):
         quiz = self.quiz
-        quiz.generate_quiz(field=0, random=False)
+        quiz.generate_quiz(field=0, shuffle=False)
 
         quiz.ask_question()
         quiz.give_response('a1')
@@ -149,7 +149,7 @@ class Test_QuizGenerator(unittest.TestCase):
 
     def test_return_misses(self):
         quiz = self.quiz
-        quiz.generate_quiz(field=0, random=False)
+        quiz.generate_quiz(field=0, shuffle=False)
 
         quiz.ask_question()
         quiz.give_response('a1')

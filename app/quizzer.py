@@ -59,7 +59,7 @@ class QuizGenerator():
         self._question_list = None
         self._question_num = None
 
-    def generate_quiz(self, field=0, random=False):
+    def generate_quiz(self, field=0, shuffle=False):
         self._question_field = field % 2
         self._answer_field = (field - 1) % 2
 
@@ -67,7 +67,7 @@ class QuizGenerator():
         self._question_list = list(range(quiz_len))
         self.scores = [0] * quiz_len
 
-        if random:
+        if shuffle:
             random.shuffle(self._question_list)
         else:
             self._question_list.reverse()
@@ -111,8 +111,8 @@ class QuizAdministrator():
         self.score = None
 
     def start_quiz(self):
-        quiz = QuizGenerator(data=quiz_data)
-        quiz.generate_quiz(field=self.field, random=False)
+        quiz = QuizGenerator(data=self.quiz_data)
+        quiz.generate_quiz(field=self.field, shuffle=True)
         quiz.ask_question()
         while quiz.question:
             response = input("%s: " % quiz.question)
