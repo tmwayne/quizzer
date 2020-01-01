@@ -84,7 +84,6 @@ class Test_QuizGenerator(unittest.TestCase):
     ## SETUP
     ##############################
     def setUp(self):
-        """ Write quiz files for different cases """
         with open('quiz_valid.csv', 'w') as f_out:
             f_out.writelines(['question,answer\n', 'q1,a1\n', 'q2,a2\n'])
         quiz_data = QuizDataLoader()
@@ -92,7 +91,6 @@ class Test_QuizGenerator(unittest.TestCase):
         self.quiz = QuizGenerator(data=quiz_data)
 
     def tearDown(self):
-        """ Remove quiz files from disk """
         os.remove('quiz_valid.csv')
         del self.quiz
 
@@ -162,6 +160,21 @@ class Test_QuizGenerator(unittest.TestCase):
         quiz.give_response('a4') # Give incorrect response
         quiz.update_scores()
         self.assertEqual(quiz.return_misses(), [['q2', 'a2']])
+
+class Test_QuizAdministator(unittest.TestCase):
+
+    ## SETUP
+    ##############################
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+
+    ## TESTS
+    ##############################
+
 
 ######################################################################
 ### MAIN

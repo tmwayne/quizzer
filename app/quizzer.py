@@ -25,7 +25,8 @@ class QuizDataLoader():
         self.body = None
         self.header = None
 
-    def _check_data(self, data):
+    @staticmethod
+    def _check_data(data):
         if len(data) == 0:
             raise MissingQuizData('Input is empty')
         elif len(data) == 1:
@@ -43,27 +44,23 @@ class QuizDataLoader():
             self.body = data[1:]
 
 class QuizGenerator():
-    ## Public attributes
-    question = None
-    answer = None
-    response = None
-    scores = None
-
-    ## Private attributes
-    _quiz_header = None
-    _quiz_body = None
-    _question_field = None
-    _answer_field = None
-    _question_list = None
-    _question_num = None
 
     def __init__(self, data):
         assert(type(data) == QuizDataLoader)
+        self.question = None
+        self.answer = None
+        self.response = None
+        self.scores = None
+
         self._quiz_header = data.header
         self._quiz_body = data.body
+        self._question_field = None
+        self._answer_field = None
+        self._question_list = None
+        self._question_num = None
 
     def generate_quiz(self, field=0, random=False):
-        self._question_field = field
+        self._question_field = field % 2
         self._answer_field = (field - 1) % 2
 
         quiz_len = len(self._quiz_body)
@@ -103,6 +100,40 @@ class QuizGenerator():
     def return_misses(self):
         return [x[1] for x in zip(self.scores, self._quiz_body) if x[0] == -1]
 
+
+class QuizAdministrator():
+
+    def __init__(self, data, num=-1, field=0, misses_file=None):
+        self.quiz_data = data
+        self.num = num
+        self.field = field
+        self.misses_file = misses_file
+        self.score = None
+
+    def start_quiz(self):
+        quiz = QuizGenerator(data=quiz_data)
+        quiz.generate_quiz(field=self.field, random=False)
+        quiz.ask_question()
+        while quiz.question:
+            response = input("%s: " % quiz.question)
+            quiz.give_response(response)
+            quiz.check_response()
+            quiz.update_scores()
+            quiz.ask_question()
+
+        print(self._score_quiz(quiz))
+
+    @staticmethod
+    def _score_quiz(quiz):
+        score = quiz.score_quiz()
+        if score > 0.9:
+            out = f"Way to go, you scored {score}!"
+        elif score > .75:
+            out = f"You scored {score}. You're getting there!"
+        else:
+            out = f"You scored {score}. Keep working at it!"
+        return out
+        
 
 ## EXCEPTIONS
 ##############################
