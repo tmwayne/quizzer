@@ -54,8 +54,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     quiz_file = args.quiz_file[0] 
     misses_file = args.misses_file[0] if args.misses_file else '/dev/null/'
-    num_questions = args.n[0] if args.n else -1
-    question_field = args.field[0] if args.field else 0
+    num_questions = int(args.n[0]) if args.n else 0
+    question_field = int(args.field[0]) if args.field else 0
     
     ## ADMINISTER QUIZ
     ##############################

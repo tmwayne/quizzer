@@ -109,6 +109,33 @@ class Test_QuizGenerator(unittest.TestCase):
         quiz.ask_question()
         self.assertIsNone(quiz.question)
 
+    def test_question_truncation(self):
+        quiz = self.quiz
+
+        quiz.generate_quiz(num=-1)
+        num = 0
+        quiz.ask_question()
+        while quiz.question:
+            num += 1
+            quiz.ask_question()
+        self.assertEqual(num, 2)
+
+        quiz.generate_quiz(num=1)
+        num = 0
+        quiz.ask_question()
+        while quiz.question:
+            num += 1
+            quiz.ask_question()
+        self.assertEqual(num, 1)
+
+        quiz.generate_quiz(num=100)
+        num = 0
+        quiz.ask_question()
+        while quiz.question:
+            num += 1
+            quiz.ask_question()
+        self.assertEqual(num, 2)
+
     def test_response_checking(self):
         quiz = self.quiz
         quiz.generate_quiz(field=0, shuffle=False)

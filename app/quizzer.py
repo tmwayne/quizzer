@@ -59,18 +59,24 @@ class QuizGenerator():
         self._question_list = None
         self._question_num = None
 
-    def generate_quiz(self, field=0, shuffle=False):
+    def generate_quiz(self, num=0, field=0, shuffle=False):
         self._question_field = field % 2
         self._answer_field = (field - 1) % 2
 
         quiz_len = len(self._quiz_body)
-        self._question_list = list(range(quiz_len))
+        question_list = list(range(quiz_len))
         self.scores = [0] * quiz_len
 
         if shuffle:
-            random.shuffle(self._question_list)
+            random.shuffle(question_list)
         else:
-            self._question_list.reverse()
+            question_list.reverse()
+
+        if num < 1 or num > quiz_len:
+            self._question_list = question_list
+        else:
+            self._question_list = question_list[-1*num:]
+
 
     def ask_question(self):
         if self._question_list:
@@ -103,7 +109,7 @@ class QuizGenerator():
 
 class QuizAdministrator():
 
-    def __init__(self, data, num=-1, field=0, misses_file=None):
+    def __init__(self, data, num, field, misses_file):
         self.quiz_data = data
         self.num = num
         self.field = field
@@ -112,7 +118,7 @@ class QuizAdministrator():
 
     def start_quiz(self):
         quiz = QuizGenerator(data=self.quiz_data)
-        quiz.generate_quiz(field=self.field, shuffle=True)
+        quiz.generate_quiz(num=self.num, field=self.field, shuffle=True)
         quiz.ask_question()
         while quiz.question:
             response = input("%s: " % quiz.question)
