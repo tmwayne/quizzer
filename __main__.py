@@ -53,7 +53,7 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
     quiz_file = args.quiz_file[0] 
-    misses_file = args.misses_file[0] if args.misses_file else '/dev/null/'
+    misses_file = args.misses_file[0] if args.misses_file else None
     num_questions = int(args.n[0]) if args.n else 0
     question_field = int(args.field[0]) if args.field else 0
     

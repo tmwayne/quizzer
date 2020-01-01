@@ -58,10 +58,12 @@ class QuizGenerator():
         self._answer_field = None
         self._question_list = None
         self._question_num = None
+        self._misses_file = None
 
-    def generate_quiz(self, num=0, field=0, shuffle=False):
+    def generate_quiz(self, num=0, field=0, misses_file=None, shuffle=False):
         self._question_field = field % 2
         self._answer_field = (field - 1) % 2
+        self._misses_file = misses_file
 
         quiz_len = len(self._quiz_body)
         question_list = list(range(quiz_len))
@@ -106,6 +108,15 @@ class QuizGenerator():
     def return_misses(self):
         return [x[1] for x in zip(self.scores, self._quiz_body) if x[0] == -1]
 
+    def write_misses(self):
+        misses = self.return_misses()
+        if self._misses_file and misses:
+            with open(self._misses_file, 'w') as f_out:
+                csv_writer = csv.writer(f_out, delimiter=',')
+                csv_writer.writerow(self._quiz_header)
+                for row in misses:
+                    csv_writer.writerow(row)
+            
 
 class QuizAdministrator():
 
@@ -118,7 +129,12 @@ class QuizAdministrator():
 
     def start_quiz(self):
         quiz = QuizGenerator(data=self.quiz_data)
-        quiz.generate_quiz(num=self.num, field=self.field, shuffle=True)
+        quiz.generate_quiz(
+            num=self.num, 
+            field=self.field,
+            misses_file=self.misses_file,
+            shuffle=True
+        )
         quiz.ask_question()
         while quiz.question:
             response = input("%s: " % quiz.question)
@@ -127,6 +143,7 @@ class QuizAdministrator():
             quiz.update_scores()
             quiz.ask_question()
 
+        quiz.write_misses()
         print(self._score_quiz(quiz))
 
     @staticmethod

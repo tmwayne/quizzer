@@ -188,6 +188,38 @@ class Test_QuizGenerator(unittest.TestCase):
         quiz.update_scores()
         self.assertEqual(quiz.return_misses(), [['q2', 'a2']])
 
+    def test_write_misses(self):
+        misses_file = 'test_misses_file.txt'
+        quiz = self.quiz
+
+        def read_misses(misses_file):
+            with open(misses_file, 'r') as f_in:
+                return [x.strip('\n') for x in f_in.readlines()]
+
+        quiz.generate_quiz(field=0, shuffle=False, misses_file=misses_file)
+        quiz.ask_question()
+        quiz.give_response('wrong answer')
+        quiz.update_scores()
+        quiz.write_misses()
+
+        misses = read_misses(misses_file)
+        self.assertEqual(misses, ['question,answer', 'q1,a1'])
+
+        ## Test that the file is correctly overwritten
+        quiz.generate_quiz(field=0, shuffle=False, misses_file=misses_file)
+        quiz.ask_question()
+        quiz.give_response('a1')
+        quiz.ask_question()
+        quiz.give_response('wrong answer')
+        quiz.update_scores()
+        quiz.write_misses()
+
+        misses = read_misses(misses_file)
+        self.assertEqual(misses, ['question,answer', 'q2,a2'])
+
+        os.remove(misses_file)
+
+
 class Test_QuizAdministator(unittest.TestCase):
 
     ## SETUP
@@ -201,6 +233,7 @@ class Test_QuizAdministator(unittest.TestCase):
 
     ## TESTS
     ##############################
+    
 
 
 ######################################################################
