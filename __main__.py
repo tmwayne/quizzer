@@ -20,7 +20,7 @@ from logging.config import fileConfig
 fileConfig('configs/logging.ini')
 logger = logging.getLogger()
 
-from app.quizzer import main
+from app.quizzer import QuizDataLoader
 
 ######################################################################
 ### FUNCTIONS
@@ -44,10 +44,14 @@ except Exception as e:
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Description')
-    parser.add_argument('input', nargs=1, help='Input file')
+    parser.add_argument('quiz_file', nargs=1, help='Input file')
+    parser.add_argument('-n', nargs=1, help='Number of questions')
+    parser.add_argument('--field', nargs=1, help='Field number of question')
+    parser.add_argument('--misses_file', nargs=1, help='File to save misses to')
     
     args = parser.parse_args()
-    input_file = args.input[0] 
-
-    main()
+    quiz_file = args.quiz_file[0] 
+    misses_file = args.misses_file[0] if args.misses_file else '/dev/null/'
+    num_questions = args.n[0] if args.n else -1
+    question_field = args.field[0] if args.field else 0
     
