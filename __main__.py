@@ -5,7 +5,7 @@
 description: Give quiz 
 author: Tyler Wayne
 data created: 2019-12-31
-last modified: 2019-12-31
+last modified: 2020-01-01
 """
 
 ######################################################################
@@ -14,11 +14,13 @@ last modified: 2019-12-31
 
 import json
 import logging
+import argparse
 from logging.config import fileConfig
 
 fileConfig('configs/logging.ini')
 logger = logging.getLogger()
 
+from app.quizzer import main
 
 ######################################################################
 ### FUNCTIONS
@@ -41,3 +43,11 @@ except Exception as e:
 
 if __name__ == '__main__':
 
+    parser = argparse.ArgumentParser(description='Description')
+    parser.add_argument('input', nargs=1, help='Input file')
+    
+    args = parser.parse_args()
+    input_file = args.input[0] 
+
+    main()
+    
