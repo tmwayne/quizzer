@@ -13,6 +13,7 @@ last modified: 2020-01-01
 ######################################################################
 
 import csv
+import random
 
 ######################################################################
 ### FUNCTIONS
@@ -39,6 +40,43 @@ class QuizDataLoader():
             self._check_data(data)
             self.header = data[0]
             self.body = data[1:]
+
+class QuizGenerator():
+    question = None
+    answer = None
+    response = None
+
+    def __init__(self, data):
+        assert(type(data) == QuizDataLoader)
+        self._quiz_header = data.header
+        self._quiz_body = data.body
+
+    def generate_quiz(self, field=0, random=False):
+        self._question_field = field
+        self._answer_field = (field - 1) % 2
+
+        quiz_len = len(self._quiz_body)
+        self._question_list = list(range(quiz_len))
+
+        if random:
+            random.shuffle(self._question_list)
+        else:
+            self._question_list.reverse()
+
+    def ask_question(self):
+        if self._question_list:
+            question = self._question_list.pop()
+            self.question = self._quiz_body[question][self._question_field]
+            self.answer = self._quiz_body[question][self._answer_field]
+        else:
+            self.question = None
+            self.answer = None
+
+    def give_response(self, response):
+        self.response = response
+
+    def check_response(self):
+        return self.answer == self.response
 
 
 ## EXCEPTIONS

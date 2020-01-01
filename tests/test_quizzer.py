@@ -16,6 +16,7 @@ import os
 
 from app.quizzer import (
     QuizDataLoader,
+    QuizGenerator,
     MalformedQuizData,
     MissingQuizData,
     MissingQuizBody,
@@ -48,7 +49,7 @@ class TestCase(unittest.TestCase):
         for file_name in self.quizzes.keys():
             os.remove(file_name)
 
-    ## QUIZDATALOADER
+    ## QuizDataLoader
     ##############################
     def test_load_valid_quiz(self):
         quiz_data = QuizDataLoader()
@@ -76,6 +77,37 @@ class TestCase(unittest.TestCase):
             QuizDataLoader().from_csv('quiz_missing_data.csv')
         except Exception as e:
             self.assertEqual(type(e), MissingQuizData)
+
+    ## QuizGenerator
+    ##############################
+    def test_question_generation(self):
+        quiz_data = QuizDataLoader()
+        quiz_data.from_csv('quiz_valid.csv')
+        quiz = QuizGenerator(data=quiz_data)
+        quiz.generate_quiz(field=0, random=False)
+
+        quiz.ask_question()
+        self.assertEqual(quiz.question, 'q1')
+
+        quiz.ask_question()
+        self.assertEqual(quiz.question, 'q2')
+
+        quiz.ask_question()
+        self.assertIsNone(quiz.question)
+
+    def test_answer_checking(self):
+        quiz_data = QuizDataLoader()
+        quiz_data.from_csv('quiz_valid.csv')
+        quiz = QuizGenerator(data=quiz_data)
+        quiz.generate_quiz()
+
+        quiz.ask_question()
+        self.assertEqual(quiz.question, 'q1')
+        quiz.give_response('a1')
+        self.assertTrue(quiz.check_response())
+
+        quiz.give_response('a2')
+        self.assertFalse(quiz.check_response())
 
 
 ######################################################################
