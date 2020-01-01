@@ -14,22 +14,28 @@ last modified: 2020-01-01
 import unittest
 import os
 
+from app.quizzer import (
+    QuizDataLoader,
+    MalformedQuizData,
+    MissingQuizData,
+    MissingQuizBody,
+)
+
 ######################################################################
 ### FUNCTIONS
 ######################################################################
 
 class TestCase(unittest.TestCase):
 
+    ## SETUP
+    ##############################
     quizzes = {
         'quiz_valid.csv': ['question,answer\n', 'q1,a1\n', 'q2,a2\n'],
         'quiz_missing_answer.csv': ['question,answer\n', 'q1\n', 'q2,a2\n'],
         'quiz_extra_comma.csv': ['question,answer\n', 'q1,,a1\n', 'q2,a2\n'],
-        'quiz_no_questions.csv': ['question,answer\n'],
-        'quiz_empty.csv': [],
+        'quiz_missing_body.csv': ['question,answer\n'],
+        'quiz_missing_data.csv': [],
     }
-
-    ## SETUP
-    ##############################
 
     def setUp(self):
         """ Write quiz files for different cases """
@@ -42,12 +48,34 @@ class TestCase(unittest.TestCase):
         for file_name in self.quizzes.keys():
             os.remove(file_name)
 
+    ## QUIZDATALOADER
+    ##############################
     def test_load_valid_quiz(self):
-        pass
+        quiz_data = QuizDataLoader()
+        quiz_data.from_csv('quiz_valid.csv')
+        self.assertEqual(quiz_data.header, ['question', 'answer'])
+        self.assertEqual(len(quiz_data.body), 2)
 
     def test_load_malformed_quiz(self):
-        pass
+        try:
+            QuizDataLoader().from_csv('quiz_missing_answer.csv')
+        except Exception as e:
+            self.assertEqual(type(e), MalformedQuizData)
 
+        try:
+            QuizDataLoader().from_csv('quiz_extra_comma.csv')
+        except Exception as e:
+            self.assertEqual(type(e), MalformedQuizData)
+
+        try:
+            QuizDataLoader().from_csv('quiz_missing_body.csv')
+        except Exception as e:
+            self.assertEqual(type(e), MissingQuizBody)
+
+        try:
+            QuizDataLoader().from_csv('quiz_missing_data.csv')
+        except Exception as e:
+            self.assertEqual(type(e), MissingQuizData)
 
 
 ######################################################################
