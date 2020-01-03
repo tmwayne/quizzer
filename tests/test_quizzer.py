@@ -14,9 +14,10 @@ last modified: 2020-01-01
 import unittest
 import os
 
-from app.quizzer import (
+from quizzer.quizzer import (
     QuizDataLoader,
     QuizGenerator,
+    QuizAdministrator,
     MalformedQuizData,
     MissingQuizData,
     MissingQuizBody,

@@ -20,7 +20,7 @@ from logging.config import fileConfig
 fileConfig('configs/logging.ini')
 logger = logging.getLogger()
 
-from app.quizzer import QuizDataLoader, QuizAdministrator
+from quizzer import QuizDataLoader, QuizAdministrator
 
 ######################################################################
 ### FUNCTIONS
