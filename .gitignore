@@ -1,5 +1,6 @@
 # Files
 .*
+*.csv
 
 # Directories
 **/__pycache__
